@@ -1,0 +1,21 @@
+name,version,scripts,private,dependencies,devDependencies
+gestion-employer,0.0.0,ng,True,^17.3.0,~5.1.0
+gestion-employer,0.0.0,ng serve,True,^17.3.0,~5.1.0
+gestion-employer,0.0.0,ng build,True,^17.3.0,~5.1.0
+gestion-employer,0.0.0,ng build --watch --configuration development,True,^17.3.0,~5.1.0
+gestion-employer,0.0.0,ng test,True,^17.3.0,~5.1.0
+gestion-employer,0.0.0,node dist/gestion-employer/server/server.mjs,True,^17.3.0,~5.1.0
+gestion-employer,0.0.0,ng,True,^17.3.17,~5.1.0
+gestion-employer,0.0.0,ng,True,^4.18.2,~5.1.0
+gestion-employer,0.0.0,ng,True,~7.8.0,~5.1.0
+gestion-employer,0.0.0,ng,True,^2.3.0,~5.1.0
+gestion-employer,0.0.0,ng,True,~0.14.3,~5.1.0
+gestion-employer,0.0.0,ng,True,^17.3.0,^17.3.17
+gestion-employer,0.0.0,ng,True,^17.3.0,^17.3.0
+gestion-employer,0.0.0,ng,True,^17.3.0,^4.17.17
+gestion-employer,0.0.0,ng,True,^17.3.0,^18.18.0
+gestion-employer,0.0.0,ng,True,^17.3.0,~6.4.0
+gestion-employer,0.0.0,ng,True,^17.3.0,~3.2.0
+gestion-employer,0.0.0,ng,True,^17.3.0,~2.2.0
+gestion-employer,0.0.0,ng,True,^17.3.0,~2.1.0
+gestion-employer,0.0.0,ng,True,^17.3.0,~5.4.2
