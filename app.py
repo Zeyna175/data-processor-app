@@ -7,9 +7,9 @@ import pandas as pd
 from werkzeug.utils import secure_filename
 
 # Chemin absolu vers les fichiers statiques
-static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'python_Angular', 'dist', 'python-angular', 'browser')
+static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 print(f"Static folder path: {static_folder}")
-print(f"Static folder exists: {os.path.exists(static_folder)}")
+print(f"Static folder exists: {os.path.exists(static_folder)}"))
 
 app = Flask(__name__, static_folder=static_folder, static_url_path='')
 CORS(app)  # Autorise toutes les origines pour le déploiement
