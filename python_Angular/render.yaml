@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: python-angular-frontend
+    env: static
+    buildCommand: npm install && ng build
+    staticPublishPath: ./dist/python-angular/browser
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

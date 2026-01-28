@@ -1,12 +1,10 @@
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from data_processor import DataProcessor
 import os
 import pandas as pd
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
-CORS(app, origins=['*'])
+app = Flask(__name__, static_folder='python_Angular/dist/python-angular/browser', static_url_path='')
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
@@ -92,6 +90,19 @@ def download_file(filename):
 @app.route('/api/status')
 def status():
     return jsonify({'status': 'API active', 'supported_formats': list(ALLOWED_EXTENSIONS)})
+
+@app.route('/')
+def serve_angular():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    if path.startswith('api/'):
+        return jsonify({'error': 'API endpoint not found'}), 404
+    try:
+        return send_from_directory(app.static_folder, path)
+    except:
+        return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     import os
