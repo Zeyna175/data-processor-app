@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from data_processor import DataProcessor
 import os
+from pathlib import Path
 import pandas as pd
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__, static_folder='python_Angular/dist/python-angular/browser', static_url_path='')
+# Chemin absolu vers les fichiers statiques
+static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'python_Angular', 'dist', 'python-angular', 'browser')
+
+app = Flask(__name__, static_folder=static_folder, static_url_path='')
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
@@ -93,16 +97,16 @@ def status():
 
 @app.route('/')
 def serve_angular():
-    return send_from_directory(app.static_folder, 'index.html')
+    return send_from_directory(static_folder, 'index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
     if path.startswith('api/'):
         return jsonify({'error': 'API endpoint not found'}), 404
     try:
-        return send_from_directory(app.static_folder, path)
+        return send_from_directory(static_folder, path)
     except:
-        return send_from_directory(app.static_folder, 'index.html')
+        return send_from_directory(static_folder, 'index.html')
 
 if __name__ == '__main__':
     import os
