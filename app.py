@@ -8,6 +8,8 @@ from werkzeug.utils import secure_filename
 
 # Chemin absolu vers les fichiers statiques
 static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'python_Angular', 'dist', 'python-angular', 'browser')
+print(f"Static folder path: {static_folder}")
+print(f"Static folder exists: {os.path.exists(static_folder)}")
 
 app = Flask(__name__, static_folder=static_folder, static_url_path='')
 CORS(app)  # Autorise toutes les origines pour le déploiement
@@ -107,11 +109,17 @@ def serve_static(path):
     print(f"Requested path: {path}")
     if path.startswith('api/'):
         return jsonify({'error': 'API endpoint not found'}), 404
-    try:
-        print(f"Trying to serve: {path} from {static_folder}")
+    
+    # Vérifier si le fichier existe
+    file_path = os.path.join(static_folder, path)
+    print(f"Looking for file: {file_path}")
+    print(f"File exists: {os.path.exists(file_path)}")
+    
+    if os.path.exists(file_path):
         return send_from_directory(static_folder, path)
-    except Exception as e:
-        print(f"Error serving {path}: {e}")
+    else:
+        # Fallback vers index.html pour les routes Angular
+        print(f"File not found, serving index.html")
         return send_from_directory(static_folder, 'index.html')
 
 if __name__ == '__main__':
