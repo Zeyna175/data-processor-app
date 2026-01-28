@@ -2,8 +2,12 @@ services:
   - type: web
     name: python-angular-frontend
     env: static
-    buildCommand: npm install && ng build
+    buildCommand: npm install && npm run build
     staticPublishPath: ./dist/python-angular/browser
+    headers:
+      - path: /*
+        headers:
+          Cache-Control: no-cache
     routes:
       - type: rewrite
         source: /*

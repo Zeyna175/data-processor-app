@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_file, send_from_directory
+from flask_cors import CORS
 from data_processor import DataProcessor
 import os
 from pathlib import Path
@@ -9,6 +10,7 @@ from werkzeug.utils import secure_filename
 static_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'python_Angular', 'dist', 'python-angular', 'browser')
 
 app = Flask(__name__, static_folder=static_folder, static_url_path='')
+CORS(app)  # Autorise toutes les origines pour le déploiement
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
