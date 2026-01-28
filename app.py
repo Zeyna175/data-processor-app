@@ -97,15 +97,19 @@ def status():
 
 @app.route('/')
 def serve_angular():
+    print(f"Serving index.html from: {static_folder}")
     return send_from_directory(static_folder, 'index.html')
 
 @app.route('/<path:path>')
 def serve_static(path):
+    print(f"Requested path: {path}")
     if path.startswith('api/'):
         return jsonify({'error': 'API endpoint not found'}), 404
     try:
+        print(f"Trying to serve: {path} from {static_folder}")
         return send_from_directory(static_folder, path)
-    except:
+    except Exception as e:
+        print(f"Error serving {path}: {e}")
         return send_from_directory(static_folder, 'index.html')
 
 if __name__ == '__main__':
