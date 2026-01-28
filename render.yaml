@@ -2,7 +2,7 @@ services:
   - type: web
     name: data-processor-api
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && cd python_Angular && npm install && npm run build
     startCommand: python app.py
     envVars:
       - key: PYTHON_VERSION
