@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class DataProcessorService {
-  private apiUrl = 'https://data-processor-app.onrender.com/api';
+  private apiUrl = 'https://data-processor-api-aeuh.onrender.com/api';
 
   constructor(private http: HttpClient) { }
 
