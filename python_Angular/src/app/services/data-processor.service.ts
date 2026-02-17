@@ -10,10 +10,14 @@ export class DataProcessorService {
 
   constructor(private http: HttpClient) { }
 
-  uploadFile(file: File): Observable<any> {
+  analyzeFile(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.apiUrl}/upload`, formData);
+    return this.http.post(`${this.apiUrl}/analyze`, formData);
+  }
+
+  processFile(filename: string, options: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/process`, { filename, options });
   }
 
   downloadFile(filename: string): Observable<Blob> {

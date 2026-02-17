@@ -1,0 +1,30 @@
+https://guileless-medovik-15b9ac.netlify.app/ur
+
+
+
+https://data-processor-app-1.onrender.com
+
+
+
+
+npm audit fix --force
+npm run dev
+
+
+ajouter Page client O garage
+Champs
+ 
+nom    Slash Avis 
+dans la page formulaire client ajoute Nom complet 
+Nom Du selectinnaire champ a selectinner par le client parmi les nom qui existe 
+première visite esque 
+soite oui wala non
+
+Note  Sur 10 reponse de type reluse reponse a cocher
+Amabilite decoute note sur 
+Comprehension du devis sur 10 
+Qualité de reponse sur 10
+Conformité dexigence esque satisfait 
+Clarte du devis 
+Reponse au besoin Sur 10
+Qualité de la prestation globale

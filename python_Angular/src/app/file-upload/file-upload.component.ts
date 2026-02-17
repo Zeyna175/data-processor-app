@@ -1,89 +1,144 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataProcessorService } from '../services/data-processor.service';
+import { ProcessingOptionsComponent } from '../processing-options/processing-options.component';
+import { ResultsComponent } from '../results/results.component';
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProcessingOptionsComponent, ResultsComponent],
   template: `
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <div class="card">
-            <div class="card-header">
-              <h3 class="text-center">Traitement Automatique des Données</h3>
+    <div class="container">
+      <div class="stepper" *ngIf="currentStep > 0">
+        <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+          <div class="step-number">1</div>
+          <div class="step-label">Upload</div>
+        </div>
+        <div class="step-line" [class.completed]="currentStep > 1"></div>
+        <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+          <div class="step-number">2</div>
+          <div class="step-label">Analyse</div>
+        </div>
+        <div class="step-line" [class.completed]="currentStep > 2"></div>
+        <div class="step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
+          <div class="step-number">3</div>
+          <div class="step-label">Options</div>
+        </div>
+        <div class="step-line" [class.completed]="currentStep > 3"></div>
+        <div class="step" [class.active]="currentStep >= 4">
+          <div class="step-number">4</div>
+          <div class="step-label">Résultats</div>
+        </div>
+      </div>
+
+      <div *ngIf="currentStep === 1" class="upload-section">
+        <div class="header">
+          <h1>🚀 Traitement Automatique des Données</h1>
+          <p class="subtitle">Nettoyage et normalisation intelligents</p>
+        </div>
+        
+        <div class="upload-card">
+          <div class="upload-area" 
+               (dragover)="onDragOver($event)" 
+               (dragleave)="onDragLeave($event)"
+               (drop)="onDrop($event)"
+               [class.drag-over]="isDragOver">
+            <input type="file" 
+                   #fileInput 
+                   (change)="onFileSelected($event)" 
+                   accept=".csv,.xlsx,.xls,.json,.xml"
+                   style="display: none;">
+            <div class="upload-content">
+              <div class="upload-icon">📁</div>
+              <p class="upload-text">Glissez-déposez votre fichier ici</p>
+              <button class="btn btn-primary" (click)="fileInput.click()">
+                Sélectionner un fichier
+              </button>
+              <p class="formats">CSV, Excel, JSON, XML</p>
             </div>
-            <div class="card-body">
-              <div class="upload-area" 
-                   (dragover)="onDragOver($event)" 
-                   (dragleave)="onDragLeave($event)"
-                   (drop)="onDrop($event)"
-                   [class.drag-over]="isDragOver">
-                <input type="file" 
-                       #fileInput 
-                       (change)="onFileSelected($event)" 
-                       accept="*"
-                       style="display: none;">
-                <div class="text-center">
-                  <div class="mb-3">📁</div>
-                  <p>Glissez-déposez votre fichier ici ou</p>
-                  <button class="btn btn-primary" (click)="fileInput.click()">
-                    Sélectionner un fichier
-                  </button>
-                  <p class="mt-2 text-muted">Formats supportés: CSV, Excel, JSON, XML</p>
-                </div>
-              </div>
-              
-              <div *ngIf="selectedFile" class="mt-3">
-                <p><strong>Fichier sélectionné:</strong> {{selectedFile.name}}</p>
-                <button class="btn btn-success" (click)="uploadFile()" [disabled]="isUploading">
-                  <span *ngIf="isUploading">⏳</span>
-                  {{isUploading ? 'Traitement...' : 'Traiter le fichier'}}
-                </button>
-              </div>
-              
-              <div *ngIf="result" class="mt-3 alert alert-success">
-                <h5>✅ {{result.message}}</h5>
-                <p>Lignes: {{result.rows}} | Colonnes: {{result.columns}}</p>
-                <button class="btn btn-outline-success" (click)="downloadFile()">
-                  Télécharger le fichier traité
-                </button>
-              </div>
-              
-              <div *ngIf="error" class="mt-3 alert alert-danger">
-                <strong>Erreur:</strong> {{error}}
-              </div>
+          </div>
+          
+          <div *ngIf="selectedFile" class="file-selected">
+            <div class="file-info">
+              <span class="file-icon">📄</span>
+              <span class="file-name">{{selectedFile.name}}</span>
+              <span class="file-size">{{getFileSize()}}</span>
             </div>
+            <button class="btn btn-success" (click)="analyzeFile()" [disabled]="isProcessing">
+              <span *ngIf="isProcessing">⏳ Analyse...</span>
+              <span *ngIf="!isProcessing">🔍 Analyser</span>
+            </button>
+          </div>
+          
+          <div *ngIf="error" class="alert alert-danger">
+            ❌ {{error}}
           </div>
         </div>
       </div>
+
+      <app-processing-options 
+        *ngIf="currentStep === 2" 
+        [analysis]="analysis"
+        (back)="goBack()"
+        (process)="processFile($event)">
+      </app-processing-options>
+
+      <app-results 
+        *ngIf="currentStep === 3" 
+        [stats]="processingStats"
+        [filename]="processedFilename"
+        (download)="downloadFile()"
+        (newFile)="reset()">
+      </app-results>
     </div>
   `,
   styles: [`
-    .upload-area {
-      border: 2px dashed #ccc;
-      border-radius: 10px;
-      padding: 40px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .upload-area:hover, .upload-area.drag-over {
-      border-color: #007bff;
-      background-color: #f8f9fa;
-    }
-    .card {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 2rem; min-height: 100vh; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+    .stepper { display: flex; align-items: center; justify-content: center; margin-bottom: 3rem; background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+    .step-number { width: 50px; height: 50px; border-radius: 50%; background: #e9ecef; color: #6c757d; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; transition: all 0.3s ease; }
+    .step.active .step-number { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .step.completed .step-number { background: #28a745; color: white; }
+    .step-label { font-size: 0.9rem; color: #6c757d; font-weight: 600; }
+    .step.active .step-label { color: #667eea; }
+    .step-line { width: 100px; height: 3px; background: #e9ecef; margin: 0 1rem; transition: all 0.3s ease; }
+    .step-line.completed { background: #28a745; }
+    .upload-section { max-width: 800px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header h1 { font-size: 2.5rem; color: #2c3e50; margin-bottom: 0.5rem; }
+    .subtitle { font-size: 1.2rem; color: #7f8c8d; }
+    .upload-card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+    .upload-area { border: 3px dashed #cbd5e0; border-radius: 15px; padding: 3rem; text-align: center; cursor: pointer; transition: all 0.3s ease; background: #f8f9fa; }
+    .upload-area:hover, .upload-area.drag-over { border-color: #667eea; background: #f0f4ff; transform: scale(1.02); }
+    .upload-content { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .upload-icon { font-size: 4rem; }
+    .upload-text { font-size: 1.2rem; color: #495057; font-weight: 600; margin: 0; }
+    .formats { color: #6c757d; font-size: 0.9rem; margin: 0; }
+    .file-selected { margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #e7f3ff; border-radius: 10px; }
+    .file-info { display: flex; align-items: center; gap: 1rem; }
+    .file-icon { font-size: 2rem; }
+    .file-name { font-weight: 600; color: #2c3e50; }
+    .file-size { color: #6c757d; font-size: 0.9rem; }
+    .btn { padding: 0.75rem 2rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+    .btn-success { background: #28a745; color: white; }
+    .btn-success:hover:not(:disabled) { background: #218838; transform: translateY(-2px); }
+    .alert { padding: 1rem; border-radius: 10px; margin-top: 1rem; }
+    .alert-danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
   `]
 })
 export class FileUploadComponent {
+  currentStep = 1;
   selectedFile: File | null = null;
-  isUploading = false;
   isDragOver = false;
-  result: any = null;
-  error: string = '';
+  isProcessing = false;
+  error = '';
+  analysis: any = null;
+  processingStats: any = null;
+  processedFilename = '';
 
   constructor(private dataService: DataProcessorService) {}
 
@@ -108,39 +163,83 @@ export class FileUploadComponent {
 
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
+    this.error = '';
   }
 
-  uploadFile() {
+  getFileSize(): string {
+    if (!this.selectedFile) return '';
+    const bytes = this.selectedFile.size;
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  analyzeFile() {
     if (!this.selectedFile) return;
     
-    this.isUploading = true;
+    this.isProcessing = true;
     this.error = '';
-    this.result = null;
 
-    this.dataService.uploadFile(this.selectedFile).subscribe({
+    this.dataService.analyzeFile(this.selectedFile).subscribe({
       next: (response) => {
-        this.result = response;
-        this.isUploading = false;
+        this.analysis = response;
+        this.currentStep = 2;
+        this.isProcessing = false;
       },
       error: (error) => {
-        this.error = error.error?.error || 'Erreur lors du traitement';
-        this.isUploading = false;
+        this.error = error.error?.error || 'Erreur d\'analyse';
+        this.isProcessing = false;
+      }
+    });
+  }
+
+  processFile(options: any) {
+    if (!this.analysis?.filename) return;
+    
+    this.isProcessing = true;
+
+    this.dataService.processFile(this.analysis.filename, options).subscribe({
+      next: (response) => {
+        this.processingStats = response.stats;
+        this.processedFilename = response.processed_file;
+        this.currentStep = 3;
+        this.isProcessing = false;
+      },
+      error: (error) => {
+        this.error = error.error?.error || 'Erreur de traitement';
+        this.isProcessing = false;
+        this.currentStep = 2;
       }
     });
   }
 
   downloadFile() {
-    if (!this.result?.processed_file) return;
+    if (!this.processedFilename) return;
     
-    this.dataService.downloadFile(this.result.processed_file).subscribe({
+    this.dataService.downloadFile(this.processedFilename).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = this.result.processed_file;
+        a.download = this.processedFilename;
         a.click();
         window.URL.revokeObjectURL(url);
       }
     });
+  }
+
+  goBack() {
+    this.currentStep = 1;
+    this.selectedFile = null;
+    this.analysis = null;
+  }
+
+  reset() {
+    this.currentStep = 1;
+    this.selectedFile = null;
+    this.analysis = null;
+    this.processingStats = null;
+    this.processedFilename = '';
+    this.error = '';
   }
 }

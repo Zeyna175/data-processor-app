@@ -1,12 +1,15 @@
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 import json
 import xml.etree.ElementTree as ET
+from datetime import datetime
 
 class DataProcessor:
     def __init__(self):
         self.scaler = StandardScaler()
+        self.analysis_results = {}
+        self.processing_stats = {}
     
     def load_file(self, file_path, file_type):
         try:
@@ -135,30 +138,27 @@ class DataProcessor:
             print(f"Erreur lors du chargement du fichier: {e}")
             raise e
     
-    def handle_missing_values(self, df):
-        df = df.copy()
+    def analyze_data(self, df):
+        """Analyse le dataset et retourne les statistiques"""
+        analysis = {
+            'total_rows': len(df),
+            'total_columns': len(df.columns),
+            'missing_values': {},
+            'duplicates': 0,
+            'outliers': {},
+            'column_types': {}
+        }
         
-        numeric_cols = df.select_dtypes(include=[np.number]).columns
-        for col in numeric_cols:
-            if df[col].isnull().any():
-                mean_val = df[col].mean()
-                if pd.isna(mean_val):
-                    df[col] = df[col].fillna(0)
-                else:
-                    df[col] = df[col].fillna(mean_val)
+        # Valeurs manquantes
+        for col in df.columns:
+            missing = df[col].isnull().sum()
+            if missing > 0:
+                analysis['missing_values'][col] = int(missing)
         
-        categorical_cols = df.select_dtypes(include=['object']).columns
-        for col in categorical_cols:
-            if df[col].isnull().any():
-                mode_values = df[col].mode()
-                if len(mode_values) > 0:
-                    df[col] = df[col].fillna(mode_values.iloc[0])
-                else:
-                    df[col] = df[col].fillna('Unknown')
+        # Doublons
+        analysis['duplicates'] = int(df.duplicated().sum())
         
-        return df
-    
-    def handle_outliers(self, df):
+        # Outliers (IQR)
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         for col in numeric_cols:
             if len(df[col].dropna()) > 0:
@@ -166,39 +166,172 @@ class DataProcessor:
                 Q3 = df[col].quantile(0.75)
                 IQR = Q3 - Q1
                 if IQR > 0:
-                    lower_bound = Q1 - 1.5 * IQR
-                    upper_bound = Q3 + 1.5 * IQR
-                    df[col] = np.where(df[col] < lower_bound, Q1, df[col])
-                    df[col] = np.where(df[col] > upper_bound, Q3, df[col])
-        return df
+                    lower = Q1 - 1.5 * IQR
+                    upper = Q3 + 1.5 * IQR
+                    outliers = ((df[col] < lower) | (df[col] > upper)).sum()
+                    if outliers > 0:
+                        analysis['outliers'][col] = int(outliers)
+        
+        # Types de colonnes
+        for col in df.columns:
+            analysis['column_types'][col] = str(df[col].dtype)
+        
+        return analysis
     
-    def remove_duplicates(self, df):
-        return df.drop_duplicates()
+    def handle_missing_values(self, df, strategy='mean'):
+        df = df.copy()
+        missing_details = {}
+        
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        for col in numeric_cols:
+            if df[col].isnull().any():
+                missing_count = int(df[col].isnull().sum())
+                if strategy == 'mean':
+                    fill_value = df[col].mean()
+                    if pd.isna(fill_value):
+                        fill_value = 0
+                elif strategy == 'median':
+                    fill_value = df[col].median()
+                    if pd.isna(fill_value):
+                        fill_value = 0
+                else:  # zero
+                    fill_value = 0
+                df[col] = df[col].fillna(fill_value)
+                missing_details[col] = missing_count
+        
+        categorical_cols = df.select_dtypes(include=['object']).columns
+        for col in categorical_cols:
+            if df[col].isnull().any():
+                missing_count = int(df[col].isnull().sum())
+                mode_values = df[col].mode()
+                if len(mode_values) > 0:
+                    df[col] = df[col].fillna(mode_values.iloc[0])
+                else:
+                    df[col] = df[col].fillna('Unknown')
+                missing_details[col] = missing_count
+        
+        return df, missing_details
     
-    def normalize_data(self, df):
+    def handle_outliers(self, df, method='iqr', action='cap'):
+        outlier_details = {}
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        
+        for col in numeric_cols:
+            if len(df[col].dropna()) > 0:
+                if method == 'iqr':
+                    Q1 = df[col].quantile(0.25)
+                    Q3 = df[col].quantile(0.75)
+                    IQR = Q3 - Q1
+                    if IQR > 0:
+                        lower = Q1 - 1.5 * IQR
+                        upper = Q3 + 1.5 * IQR
+                        outliers_mask = (df[col] < lower) | (df[col] > upper)
+                        outlier_count = int(outliers_mask.sum())
+                        
+                        if outlier_count > 0:
+                            outlier_details[col] = outlier_count
+                            if action == 'cap':
+                                df[col] = np.where(df[col] < lower, Q1, df[col])
+                                df[col] = np.where(df[col] > upper, Q3, df[col])
+                            elif action == 'remove':
+                                df = df[~outliers_mask]
+                
+                elif method == 'zscore':
+                    mean = df[col].mean()
+                    std = df[col].std()
+                    if std > 0:
+                        z_scores = np.abs((df[col] - mean) / std)
+                        outliers_mask = z_scores > 3
+                        outlier_count = int(outliers_mask.sum())
+                        
+                        if outlier_count > 0:
+                            outlier_details[col] = outlier_count
+                            if action == 'cap':
+                                df.loc[outliers_mask, col] = mean
+                            elif action == 'remove':
+                                df = df[~outliers_mask]
+        
+        return df, outlier_details
+    
+    def remove_duplicates(self, df, subset=None):
+        initial_count = len(df)
+        if subset:
+            df = df.drop_duplicates(subset=subset)
+        else:
+            df = df.drop_duplicates()
+        duplicates_removed = initial_count - len(df)
+        return df, duplicates_removed
+    
+    def normalize_data(self, df, method='standard'):
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         if len(numeric_cols) > 0 and len(df) > 0:
             try:
-                df[numeric_cols] = self.scaler.fit_transform(df[numeric_cols])
+                if method == 'standard':
+                    scaler = StandardScaler()
+                elif method == 'minmax':
+                    scaler = MinMaxScaler()
+                else:
+                    return df
+                df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
             except Exception as e:
                 print(f"Erreur lors de la normalisation: {e}")
         return df
     
-    def process_data(self, file_path, file_type):
+    def process_data(self, file_path, file_type, options=None):
         print(f"Début du traitement: {file_path}, type: {file_type}")
-        df = self.load_file(file_path, file_type)
-        print(f"Fichier chargé: {len(df)} lignes, {len(df.columns)} colonnes")
         
-        df = self.handle_missing_values(df)
+        if options is None:
+            options = {
+                'missing_strategy': 'mean',
+                'outlier_method': 'iqr',
+                'outlier_action': 'cap',
+                'duplicate_subset': None,
+                'normalization': 'standard'
+            }
+        
+        df = self.load_file(file_path, file_type)
+        initial_rows = len(df)
+        print(f"Fichier chargé: {initial_rows} lignes, {len(df.columns)} colonnes")
+        
+        stats = {
+            'initial_rows': initial_rows,
+            'initial_columns': len(df.columns),
+            'missing_values': {},
+            'outliers': {},
+            'duplicates_found': 0,
+            'duplicates_removed': 0,
+            'final_rows': 0,
+            'final_columns': 0,
+            'normalization_method': options.get('normalization', 'standard')
+        }
+        
+        # Traitement des valeurs manquantes
+        df, missing_details = self.handle_missing_values(df, options.get('missing_strategy', 'mean'))
+        stats['missing_values'] = missing_details
         print("Valeurs manquantes traitées")
         
-        df = self.handle_outliers(df)
+        # Traitement des outliers
+        df, outlier_details = self.handle_outliers(
+            df, 
+            options.get('outlier_method', 'iqr'),
+            options.get('outlier_action', 'cap')
+        )
+        stats['outliers'] = outlier_details
         print("Valeurs aberrantes traitées")
         
-        df = self.remove_duplicates(df)
+        # Suppression des doublons
+        duplicates_before = df.duplicated().sum()
+        df, duplicates_removed = self.remove_duplicates(df, options.get('duplicate_subset'))
+        stats['duplicates_found'] = int(duplicates_before)
+        stats['duplicates_removed'] = duplicates_removed
         print("Doublons supprimés")
         
-        df = self.normalize_data(df)
+        # Normalisation
+        df = self.normalize_data(df, options.get('normalization', 'standard'))
         print("Normalisation terminée")
         
-        return df
+        stats['final_rows'] = len(df)
+        stats['final_columns'] = len(df.columns)
+        stats['rows_removed'] = initial_rows - len(df)
+        
+        return df, stats
