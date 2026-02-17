@@ -6,7 +6,7 @@ import pandas as pd
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
-app = Flask(__name__, static_folder='python_Angular/dist/python-angular/browser', static_url_path='')
+app = Flask(__name__, static_folder='static', static_url_path='')
 CORS(app, origins=['*'])
 
 UPLOAD_FOLDER = 'uploads'
