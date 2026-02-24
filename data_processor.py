@@ -151,30 +151,45 @@ class DataProcessor:
         
         # Valeurs manquantes
         for col in df.columns:
-            missing = df[col].isnull().sum()
-            if missing > 0:
-                analysis['missing_values'][col] = int(missing)
+            try:
+                missing = df[col].isnull().sum()
+                if missing > 0:
+                    analysis['missing_values'][str(col)] = int(missing)
+            except:
+                pass
         
         # Doublons
-        analysis['duplicates'] = int(df.duplicated().sum())
+        try:
+            analysis['duplicates'] = int(df.duplicated().sum())
+        except:
+            analysis['duplicates'] = 0
         
-        # Outliers (IQR)
-        numeric_cols = df.select_dtypes(include=[np.number]).columns
-        for col in numeric_cols:
-            if len(df[col].dropna()) > 0:
-                Q1 = df[col].quantile(0.25)
-                Q3 = df[col].quantile(0.75)
-                IQR = Q3 - Q1
-                if IQR > 0:
-                    lower = Q1 - 1.5 * IQR
-                    upper = Q3 + 1.5 * IQR
-                    outliers = ((df[col] < lower) | (df[col] > upper)).sum()
-                    if outliers > 0:
-                        analysis['outliers'][col] = int(outliers)
+        # Outliers (IQR) - seulement pour colonnes numériques
+        try:
+            numeric_cols = df.select_dtypes(include=[np.number]).columns
+            for col in numeric_cols:
+                try:
+                    if len(df[col].dropna()) > 0:
+                        Q1 = df[col].quantile(0.25)
+                        Q3 = df[col].quantile(0.75)
+                        IQR = Q3 - Q1
+                        if IQR > 0:
+                            lower = Q1 - 1.5 * IQR
+                            upper = Q3 + 1.5 * IQR
+                            outliers = ((df[col] < lower) | (df[col] > upper)).sum()
+                            if outliers > 0:
+                                analysis['outliers'][str(col)] = int(outliers)
+                except:
+                    pass
+        except:
+            pass
         
         # Types de colonnes
         for col in df.columns:
-            analysis['column_types'][col] = str(df[col].dtype)
+            try:
+                analysis['column_types'][str(col)] = str(df[col].dtype)
+            except:
+                analysis['column_types'][str(col)] = 'unknown'
         
         return analysis
     
