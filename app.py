@@ -12,8 +12,10 @@ app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 CORS(app, origins=['*'], supports_credentials=True)
 
-# Base de données utilisateurs (remplacer par une vraie DB en production)
+# Base de données utilisateurs et sessions (remplacer par une vraie DB en production)
 users = {'admin': generate_password_hash('admin123')}
+user_sessions = {}  # {token: username}
+user_files = {}  # {username: [files]}
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
@@ -34,8 +36,26 @@ def login():
     password = data.get('password')
     
     if username in users and check_password_hash(users[username], password):
-        return jsonify({'success': True, 'token': secrets.token_hex(16), 'username': username})
+        token = secrets.token_hex(16)
+        user_sessions[token] = username
+        if username not in user_files:
+            user_files[username] = []
+        return jsonify({'success': True, 'token': token, 'username': username})
     return jsonify({'error': 'Identifiants invalides'}), 401
+
+@app.route('/api/logout', methods=['POST'])
+def logout():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if token in user_sessions:
+        del user_sessions[token]
+    return jsonify({'success': True})
+
+@app.route('/api/verify', methods=['GET'])
+def verify_token():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    if token in user_sessions:
+        return jsonify({'valid': True, 'username': user_sessions[token]})
+    return jsonify({'valid': False}), 401
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -51,6 +71,10 @@ def register():
     users[username] = generate_password_hash(password)
     return jsonify({'success': True, 'message': 'Compte créé avec succès'})
 
+def get_user_from_token():
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    return user_sessions.get(token)
+
 def allowed_file(filename):
     has_dot = '.' in filename
     if has_dot:
@@ -64,6 +88,10 @@ def allowed_file(filename):
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_file():
+    username = get_user_from_token()
+    if not username:
+        return jsonify({'error': 'Non authentifié'}), 401
+    
     if 'file' not in request.files:
         return jsonify({'error': 'Aucun fichier fourni'}), 400
     
@@ -83,6 +111,17 @@ def analyze_file():
         df = processor.load_file(file_path, file_type)
         analysis = processor.analyze_data(df)
         analysis['filename'] = filename
+        
+        # Enregistrer dans l'historique
+        file_info = {
+            'filename': filename,
+            'upload_date': datetime.now().isoformat(),
+            'rows': analysis.get('total_rows', 0),
+            'columns': analysis.get('total_columns', 0),
+            'status': 'uploaded'
+        }
+        user_files[username].append(file_info)
+        
         return jsonify(analysis)
     except Exception as e:
         return jsonify({'error': f'Erreur d\'analyse: {str(e)}'}), 500
@@ -131,6 +170,67 @@ def process_file():
         })
     except Exception as e:
         return jsonify({'error': f'Erreur de traitement: {str(e)}'}), 500
+
+@app.route('/api/files', methods=['GET'])
+def get_user_files():
+    username = get_user_from_token()
+    if not username:
+        return jsonify({'error': 'Non authentifié'}), 401
+    return jsonify({'files': user_files.get(username, [])})
+
+@app.route('/api/files/<filename>', methods=['DELETE'])
+def delete_file(filename):
+    username = get_user_from_token()
+    if not username:
+        return jsonify({'error': 'Non authentifié'}), 401
+    
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    
+    # Supprimer de l'historique
+    if username in user_files:
+        user_files[username] = [f for f in user_files[username] if f['filename'] != filename]
+    
+    return jsonify({'success': True})
+
+@app.route('/api/preview/<filename>', methods=['GET'])
+def preview_file(filename):
+    username = get_user_from_token()
+    if not username:
+        return jsonify({'error': 'Non authentifié'}), 401
+    
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if not os.path.exists(file_path):
+        return jsonify({'error': 'Fichier non trouvé'}), 404
+    
+    file_type = filename.rsplit('.', 1)[1].lower()
+    if file_type in ['xlsx', 'xls']:
+        file_type = 'excel'
+    
+    try:
+        df = processor.load_file(file_path, file_type)
+        preview_data = df.head(10).to_dict('records')
+        columns = df.columns.tolist()
+        return jsonify({'columns': columns, 'data': preview_data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    username = get_user_from_token()
+    if not username:
+        return jsonify({'error': 'Non authentifié'}), 401
+    
+    files = user_files.get(username, [])
+    total_files = len(files)
+    total_rows = sum(f.get('rows', 0) for f in files)
+    
+    return jsonify({
+        'total_files': total_files,
+        'total_rows': total_rows,
+        'recent_files': files[-5:] if files else []
+    })
 
 @app.route('/api/download/<filename>')
 def download_file(filename):

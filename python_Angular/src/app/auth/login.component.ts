@@ -31,7 +31,7 @@ export class LoginComponent {
           if (!this.isRegister) {
             localStorage.setItem('token', response.token);
             localStorage.setItem('username', response.username);
-            this.router.navigate(['/']);
+            this.router.navigate(['/dashboard']);
           } else {
             this.errorMessage = 'Compte créé ! Connectez-vous maintenant.';
             this.isRegister = false;
