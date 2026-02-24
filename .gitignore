@@ -1,0 +1,6 @@
+users.json
+uploads/
+processed/
+__pycache__/
+*.pyc
+.env

@@ -12,8 +12,31 @@ app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 CORS(app, origins=['*'], supports_credentials=True)
 
-# Base de données utilisateurs et sessions (remplacer par une vraie DB en production)
-users = {'admin': generate_password_hash('admin123')}
+import json
+
+# Fichier pour sauvegarder les utilisateurs
+USERS_FILE = 'users.json'
+
+def load_users():
+    """Charge les utilisateurs depuis le fichier"""
+    if os.path.exists(USERS_FILE):
+        try:
+            with open(USERS_FILE, 'r') as f:
+                return json.load(f)
+        except:
+            pass
+    return {'admin': generate_password_hash('admin123')}
+
+def save_users():
+    """Sauvegarde les utilisateurs dans le fichier"""
+    try:
+        with open(USERS_FILE, 'w') as f:
+            json.dump(users, f)
+    except Exception as e:
+        print(f"Erreur sauvegarde users: {e}")
+
+# Base de données utilisateurs et sessions
+users = load_users()
 user_sessions = {}  # {token: username}
 user_files = {}  # {username: [files]}
 
@@ -69,6 +92,7 @@ def register():
         return jsonify({'error': 'Utilisateur existe déjà'}), 400
     
     users[username] = generate_password_hash(password)
+    save_users()  # Sauvegarder dans le fichier
     return jsonify({'success': True, 'message': 'Compte créé avec succès'})
 
 def get_user_from_token():
