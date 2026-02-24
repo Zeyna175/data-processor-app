@@ -4,10 +4,16 @@ from data_processor import DataProcessor
 import os
 import pandas as pd
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import secrets
 
 app = Flask(__name__, static_folder='static', static_url_path='')
-CORS(app, origins=['*'])
+app.config['SECRET_KEY'] = secrets.token_hex(16)
+CORS(app, origins=['*'], supports_credentials=True)
+
+# Base de données utilisateurs (remplacer par une vraie DB en production)
+users = {'admin': generate_password_hash('admin123')}
 
 UPLOAD_FOLDER = 'uploads'
 PROCESSED_FOLDER = 'processed'
@@ -20,6 +26,30 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
 
 processor = DataProcessor()
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
+    if username in users and check_password_hash(users[username], password):
+        return jsonify({'success': True, 'token': secrets.token_hex(16), 'username': username})
+    return jsonify({'error': 'Identifiants invalides'}), 401
+
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
+    if not username or not password:
+        return jsonify({'error': 'Username et password requis'}), 400
+    if username in users:
+        return jsonify({'error': 'Utilisateur existe déjà'}), 400
+    
+    users[username] = generate_password_hash(password)
+    return jsonify({'success': True, 'message': 'Compte créé avec succès'})
 
 def allowed_file(filename):
     has_dot = '.' in filename
@@ -113,7 +143,9 @@ def status():
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve(path):
-    if path != "" and os.path.exists(app.static_folder + '/' + path):
+    if path.startswith('api/'):
+        return jsonify({'error': 'API endpoint not found'}), 404
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, 'index.html')
