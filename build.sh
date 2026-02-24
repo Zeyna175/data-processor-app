@@ -14,4 +14,8 @@ npm install
 npm run build
 cd ..
 
+echo "Copying static files..."
+mkdir -p static
+cp -r python_Angular/dist/python-angular/browser/* static/
+
 echo "Build complete!"
