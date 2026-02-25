@@ -18,16 +18,11 @@ import { ResultsComponent } from '../results/results.component';
         <div class="step-line" [class.completed]="currentStep > 1"></div>
         <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
           <div class="step-number">2</div>
-          <div class="step-label">Analyse</div>
-        </div>
-        <div class="step-line" [class.completed]="currentStep > 2"></div>
-        <div class="step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
-          <div class="step-number">3</div>
           <div class="step-label">Options</div>
         </div>
-        <div class="step-line" [class.completed]="currentStep > 3"></div>
-        <div class="step" [class.active]="currentStep >= 4">
-          <div class="step-number">4</div>
+        <div class="step-line" [class.completed]="currentStep > 2"></div>
+        <div class="step" [class.active]="currentStep >= 3">
+          <div class="step-number">3</div>
           <div class="step-label">Résultats</div>
         </div>
       </div>
@@ -158,7 +153,7 @@ export class FileUploadComponent {
   previewData: any = null;
   previewColumns: string[] = [];
 
-  constructor(private dataService: DataProcessorService) {}
+  constructor(private dataService: DataProcessorService) { }
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -230,7 +225,7 @@ export class FileUploadComponent {
 
   processFile(options: any) {
     if (!this.analysis?.filename) return;
-    
+
     this.isProcessing = true;
 
     this.dataService.processFile(this.analysis.filename, options).subscribe({
@@ -250,7 +245,7 @@ export class FileUploadComponent {
 
   downloadFile() {
     if (!this.processedFilename) return;
-    
+
     this.dataService.downloadFile(this.processedFilename).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);

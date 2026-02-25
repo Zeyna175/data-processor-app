@@ -23,9 +23,15 @@ export class ResultsComponent implements OnChanges {
 
   constructor(private dataService: DataProcessorService) { }
 
+  ngOnInit() {
+    if (this.filename) {
+      this.openPreview();
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['filename'] && this.filename) {
-      setTimeout(() => this.openPreview(), 500);
+    if (changes['filename'] && !changes['filename'].firstChange && this.filename) {
+      this.openPreview();
     }
   }
 
