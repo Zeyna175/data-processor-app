@@ -37,4 +37,9 @@ export class DataProcessorService {
   getStatus(): Observable<any> {
     return this.http.get(`${this.apiUrl}/status`);
   }
+
+  previewFile(filename: string): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get(`${this.apiUrl}/preview/${filename}`, { headers });
+  }
 }

@@ -139,6 +139,8 @@ export class FileUploadComponent {
   analysis: any = null;
   processingStats: any = null;
   processedFilename = '';
+  previewData: any = null;
+  previewColumns: string[] = [];
 
   constructor(private dataService: DataProcessorService) {}
 
@@ -176,15 +178,20 @@ export class FileUploadComponent {
 
   analyzeFile() {
     if (!this.selectedFile) return;
-    
     this.isProcessing = true;
     this.error = '';
-
     this.dataService.analyzeFile(this.selectedFile).subscribe({
       next: (response) => {
         this.analysis = response;
         this.currentStep = 2;
         this.isProcessing = false;
+        // Appel de la preview
+        this.dataService.previewFile(response.filename).subscribe({
+          next: (preview) => {
+            this.previewColumns = preview.columns;
+            this.previewData = preview.data;
+          }
+        });
       },
       error: (error) => {
         this.error = error.error?.error || 'Erreur d\'analyse';
