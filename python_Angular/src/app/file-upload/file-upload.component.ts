@@ -77,28 +77,28 @@ import { ResultsComponent } from '../results/results.component';
         </div>
       </div>
 
-      <div *ngIf="previewData && previewColumns.length">
-        <h3>Aperçu du fichier</h3>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th *ngFor="let col of previewColumns">{{col}}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of previewData">
-              <td *ngFor="let col of previewColumns">{{row[col]}}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div *ngIf="currentStep === 2">
+        <div *ngIf="previewData && previewColumns.length">
+          <h3>Aperçu du fichier</h3>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th *ngFor="let col of previewColumns">{{col}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of previewData">
+                <td *ngFor="let col of previewColumns">{{row[col]}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <app-processing-options 
+          [analysis]="analysis"
+          (back)="goBack()"
+          (process)="processFile($event)">
+        </app-processing-options>
       </div>
-
-      <app-processing-options 
-        *ngIf="currentStep === 2" 
-        [analysis]="analysis"
-        (back)="goBack()"
-        (process)="processFile($event)">
-      </app-processing-options>
 
       <app-results 
         *ngIf="currentStep === 3" 
