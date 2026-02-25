@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 from data_processor import DataProcessor
 import os
 import pandas as pd
@@ -10,33 +11,28 @@ import secrets
 
 app = Flask(__name__, static_folder='static', static_url_path='')
 app.config['SECRET_KEY'] = secrets.token_hex(16)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///users.db').replace('postgres://', 'postgresql://')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app, origins=['*'], supports_credentials=True)
 
-import json
+db = SQLAlchemy(app)
 
-# Fichier pour sauvegarder les utilisateurs
-USERS_FILE = 'users.json'
+# Modèle User pour la base de données
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-def load_users():
-    """Charge les utilisateurs depuis le fichier"""
-    if os.path.exists(USERS_FILE):
-        try:
-            with open(USERS_FILE, 'r') as f:
-                return json.load(f)
-        except:
-            pass
-    return {'admin': generate_password_hash('admin123')}
+# Créer les tables
+with app.app_context():
+    db.create_all()
+    # Créer admin par défaut si n'existe pas
+    if not User.query.filter_by(username='admin').first():
+        admin = User(username='admin', password_hash=generate_password_hash('admin123'))
+        db.session.add(admin)
+        db.session.commit()
 
-def save_users():
-    """Sauvegarde les utilisateurs dans le fichier"""
-    try:
-        with open(USERS_FILE, 'w') as f:
-            json.dump(users, f)
-    except Exception as e:
-        print(f"Erreur sauvegarde users: {e}")
-
-# Base de données utilisateurs et sessions
-users = load_users()
 user_sessions = {}  # {token: username}
 user_files = {}  # {username: [files]}
 
@@ -58,7 +54,8 @@ def login():
     username = data.get('username')
     password = data.get('password')
     
-    if username in users and check_password_hash(users[username], password):
+    user = User.query.filter_by(username=username).first()
+    if user and check_password_hash(user.password_hash, password):
         token = secrets.token_hex(16)
         user_sessions[token] = username
         if username not in user_files:
@@ -88,11 +85,14 @@ def register():
     
     if not username or not password:
         return jsonify({'error': 'Username et password requis'}), 400
-    if username in users:
+    
+    if User.query.filter_by(username=username).first():
         return jsonify({'error': 'Utilisateur existe déjà'}), 400
     
-    users[username] = generate_password_hash(password)
-    save_users()  # Sauvegarder dans le fichier
+    new_user = User(username=username, password_hash=generate_password_hash(password))
+    db.session.add(new_user)
+    db.session.commit()
+    
     return jsonify({'success': True, 'message': 'Compte créé avec succès'})
 
 def get_user_from_token():
