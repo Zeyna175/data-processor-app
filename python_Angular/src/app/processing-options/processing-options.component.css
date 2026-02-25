@@ -1,0 +1,109 @@
+.opts-container {
+    animation: fadeIn 0.4s ease;
+}
+
+.analysis-banner {
+    display: flex;
+    gap: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.banner-stat {
+    text-align: center;
+}
+
+.banner-stat .val {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.banner-stat .lbl {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.opt-card {
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.opt-card:hover {
+    border-color: var(--accent);
+    background: var(--bg-card-hover);
+}
+
+.opt-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.opt-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.opt-select {
+    width: 100%;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.opt-select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.opt-select option {
+    background: var(--bg-secondary);
+}
+
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.btn-back {
+    padding: 0.8rem 1.5rem;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.btn-process {
+    flex: 1;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-end));
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--accent-glow);
+}

@@ -1,0 +1,70 @@
+<div class="opts-container">
+    <div class="analysis-banner" *ngIf="analysis">
+        <div class="banner-stat">
+            <span class="val">{{ analysis.total_rows }}</span>
+            <span class="lbl">Lignes</span>
+        </div>
+        <div class="banner-stat">
+            <span class="val">{{ analysis.total_columns }}</span>
+            <span class="lbl">Colonnes</span>
+        </div>
+        <div class="banner-stat">
+            <span class="val">{{ getTotalMissing() }}</span>
+            <span class="lbl">Manquantes</span>
+        </div>
+    </div>
+
+    <div class="options-grid">
+        <div class="opt-card">
+            <h3>🔧 Valeurs manquantes</h3>
+            <p>Stratégie de remplacement</p>
+            <select [(ngModel)]="options.missing_strategy" class="opt-select">
+                <option value="mean">Moyenne</option>
+                <option value="median">Médiane</option>
+                <option value="zero">Zéro</option>
+            </select>
+        </div>
+
+        <div class="opt-card">
+            <h3>📊 Détection outliers</h3>
+            <p>Méthode statistique</p>
+            <select [(ngModel)]="options.outlier_method" class="opt-select">
+                <option value="iqr">IQR</option>
+                <option value="zscore">Z-Score</option>
+            </select>
+        </div>
+
+        <div class="opt-card">
+            <h3>🎯 Action outliers</h3>
+            <p>Traitement des valeurs</p>
+            <select [(ngModel)]="options.outlier_action" class="opt-select">
+                <option value="cap">Limiter</option>
+                <option value="remove">Supprimer</option>
+            </select>
+        </div>
+
+        <div class="opt-card">
+            <h3>📏 Normalisation</h3>
+            <p>Mise à l'échelle</p>
+            <select [(ngModel)]="options.normalization" class="opt-select">
+                <option value="standard">Standard</option>
+                <option value="minmax">Min-Max</option>
+            </select>
+        </div>
+
+        <div class="opt-card">
+            <h3>💾 Format sortie</h3>
+            <p>Extension du fichier</p>
+            <select [(ngModel)]="options.output_format" class="opt-select">
+                <option value="csv">CSV</option>
+                <option value="excel">Excel</option>
+                <option value="json">JSON</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn-back" (click)="onBack()">Retour</button>
+        <button class="btn-process" (click)="onProcess()">Lancer le traitement</button>
+    </div>
+</div>

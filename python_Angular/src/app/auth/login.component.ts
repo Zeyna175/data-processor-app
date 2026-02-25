@@ -18,7 +18,7 @@ export class LoginComponent {
   errorMessage = '';
   private apiUrl = 'https://data-processor-app.onrender.com/api';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   onSubmit() {
     const endpoint = this.isRegister ? '/register' : '/login';

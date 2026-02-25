@@ -1,0 +1,89 @@
+<div class="results-container">
+    <div class="success-banner">
+        <div class="success-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+            </svg>
+        </div>
+        <div class="success-text">
+            <h2>Traitement terminé !</h2>
+            <p>Votre fichier est prêt : <strong>{{ filename }}</strong></p>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-pill">
+            <span class="num">{{ stats?.initial_rows || 0 }}</span>
+            <span class="lbl">Initiales</span>
+        </div>
+        <div class="pill-arrow">→</div>
+        <div class="stat-pill success">
+            <span class="num">{{ stats?.final_rows || 0 }}</span>
+            <span class="lbl">Finales</span>
+        </div>
+        <div class="stat-pill danger">
+            <span class="num">{{ stats?.rows_removed || 0 }}</span>
+            <span class="lbl">Supprimées</span>
+        </div>
+    </div>
+
+    <div class="details-grid">
+        <div class="detail-card" *ngIf="hasMissingValues()">
+            <h4>Valeurs manquantes</h4>
+            <p><strong>{{ getTotalMissing() }}</strong> corrigées</p>
+            <div class="chips">
+                <span *ngFor="let item of getMissingItems()" class="chip">{{ item.key }}: {{ item.value }}</span>
+            </div>
+        </div>
+        <div class="detail-card" *ngIf="hasOutliers()">
+            <h4>Outliers</h4>
+            <p><strong>{{ getTotalOutliers() }}</strong> traités</p>
+            <div class="chips">
+                <span *ngFor="let item of getOutlierItems()" class="chip">{{ item.key }}: {{ item.value }}</span>
+            </div>
+        </div>
+        <div class="detail-card">
+            <h4>Normalisation</h4>
+            <p>Méthode : <strong>{{ getNormalizationLabel() }}</strong></p>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="btn-download" (click)="onDownload()">Télécharger</button>
+        <button class="btn-toggle-preview" (click)="togglePreview()">
+            {{ showPreview ? 'Cacher l\'aperçu' : 'Aperçu des données' }}
+        </button>
+        <button class="btn-new" (click)="onNewFile()">Nouveau fichier</button>
+    </div>
+
+    <div class="preview-panel" *ngIf="showPreview">
+        <div class="preview-header">
+            <h3>Aperçu des données traitées</h3>
+            <span *ngIf="previewColumns.length">{{ previewColumns.length }} colonnes</span>
+        </div>
+
+        <div *ngIf="previewLoading" class="preview-loading">
+            <span class="spinner"></span> Chargement...
+        </div>
+
+        <div *ngIf="previewError" class="preview-error">
+            {{ previewError }}
+        </div>
+
+        <div *ngIf="!previewLoading && !previewError && previewColumns.length" class="table-scroll">
+            <table class="preview-table">
+                <thead>
+                    <tr>
+                        <th *ngFor="let col of previewColumns">{{ col }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of previewData">
+                        <td *ngFor="let col of previewColumns">{{ formatVal(row[col]) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

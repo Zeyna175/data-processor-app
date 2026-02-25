@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     public authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.username = this.authService.getCurrentUsername();
@@ -53,6 +53,10 @@ export class DashboardComponent implements OnInit {
         error: (err) => console.error(err)
       });
     }
+  }
+
+  getExt(filename: string): string {
+    return filename.split('.').pop()?.toUpperCase().substring(0, 4) || 'FILE';
   }
 
   logout() {

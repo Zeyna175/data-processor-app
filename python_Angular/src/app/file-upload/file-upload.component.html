@@ -1,0 +1,51 @@
+<div class="upload-container">
+    <div class="stepper">
+        <div class="step" [class.active]="step === 1" [class.done]="step > 1">1</div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="step === 2" [class.done]="step > 2">2</div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="step === 3" [class.done]="step > 3">3</div>
+    </div>
+
+    <div *ngIf="step === 1" class="upload-card">
+        <div class="upload-header">
+            <h2>Importer un fichier</h2>
+            <p>Formats supportés : CSV, Excel, JSON, XML</p>
+        </div>
+
+        <div class="drop-zone" (click)="fileInput.click()" (drop)="onFileDropped($event)"
+            (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+            <div class="drop-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+            </div>
+            <p>Cliquez ou glissez-déposez ici</p>
+            <input #fileInput type="file" (change)="onFileSelected($event)" hidden accept=".csv,.xlsx,.xls,.json,.xml">
+        </div>
+
+        <div *ngIf="selectedFile" class="file-preview">
+            <div class="preview-info">
+                <span class="file-name">{{ selectedFile.name }}</span>
+                <span class="file-size">{{ (selectedFile.size / 1024).toFixed(1) }} KB</span>
+            </div>
+            <button class="btn-analyze" (click)="analyzeFile()" [disabled]="isAnalyzing">
+                <span *ngIf="!isAnalyzing">Analyser</span>
+                <span *ngIf="isAnalyzing" class="spinner"></span>
+            </button>
+        </div>
+    </div>
+
+    <app-processing-options *ngIf="step === 2" [analysis]="analysisResult" (back)="step = 1"
+        (process)="processFile($event)">
+    </app-processing-options>
+
+    <app-results *ngIf="step === 3" [stats]="processingStats" [filename]="processedFilename"
+        (download)="downloadResult()" (newFile)="reset()">
+    </app-results>
+
+    <div *ngIf="error" class="alert-error">
+        {{ error }}
+    </div>
+</div>
