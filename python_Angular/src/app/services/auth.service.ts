@@ -7,11 +7,11 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'https://data-processor-app.onrender.com/api';
+  private apiUrl = '/api';
   private currentUserSubject = new BehaviorSubject<string | null>(localStorage.getItem('username'));
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(username: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/login`, { username, password }).pipe(
