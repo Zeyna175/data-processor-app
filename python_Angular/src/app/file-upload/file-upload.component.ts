@@ -182,6 +182,25 @@ export class FileUploadComponent {
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
     this.error = '';
+    this.previewData = null;
+    this.previewColumns = [];
+    if (this.selectedFile) {
+      // On upload le fichier temporairement pour pouvoir le prévisualiser
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+      this.dataService.analyzeFile(this.selectedFile).subscribe({
+        next: (response) => {
+          if (response.filename) {
+            this.dataService.previewFile(response.filename).subscribe({
+              next: (preview) => {
+                this.previewColumns = preview.columns;
+                this.previewData = preview.data;
+              }
+            });
+          }
+        }
+      });
+    }
   }
 
   getFileSize(): string {
@@ -201,13 +220,6 @@ export class FileUploadComponent {
         this.analysis = response;
         this.currentStep = 2;
         this.isProcessing = false;
-        // Appel de la preview
-        this.dataService.previewFile(response.filename).subscribe({
-          next: (preview) => {
-            this.previewColumns = preview.columns;
-            this.previewData = preview.data;
-          }
-        });
       },
       error: (error) => {
         this.error = error.error?.error || 'Erreur d\'analyse';
