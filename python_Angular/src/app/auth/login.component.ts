@@ -16,7 +16,7 @@ export class LoginComponent {
   password = '';
   isRegister = false;
   errorMessage = '';
-  private apiUrl = 'https://data-processor-app.onrender.com/api';
+  private apiUrl = '/api';
 
   constructor(private http: HttpClient, private router: Router) { }
 
