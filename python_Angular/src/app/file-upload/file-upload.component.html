@@ -1,12 +1,44 @@
 <div class="upload-container">
     <div class="stepper">
-        <div class="step" [class.active]="currentStep === 1" [class.done]="currentStep > 1">1</div>
-        <div class="step-line"></div>
-        <div class="step" [class.active]="currentStep === 2" [class.done]="currentStep > 2">2</div>
-        <div class="step-line"></div>
-        <div class="step" [class.active]="currentStep === 3" [class.done]="currentStep > 3">3</div>
-        <div class="step-line"></div>
-        <div class="step" [class.active]="currentStep === 4" [class.done]="currentStep > 4">4</div>
+        <div class="step-item">
+            <div class="step" [class.active]="currentStep === 1" [class.done]="currentStep > 1">
+                <svg *ngIf="currentStep > 1" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <span *ngIf="currentStep <= 1">1</span>
+            </div>
+            <span class="step-label">Upload</span>
+        </div>
+        <div class="step-line" [class.done]="currentStep > 1"></div>
+        <div class="step-item">
+            <div class="step" [class.active]="currentStep === 2" [class.done]="currentStep > 2">
+                <svg *ngIf="currentStep > 2" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <span *ngIf="currentStep <= 2">2</span>
+            </div>
+            <span class="step-label">Analyse</span>
+        </div>
+        <div class="step-line" [class.done]="currentStep > 2"></div>
+        <div class="step-item">
+            <div class="step" [class.active]="currentStep === 3" [class.done]="currentStep > 3">
+                <svg *ngIf="currentStep > 3" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <span *ngIf="currentStep <= 3">3</span>
+            </div>
+            <span class="step-label">Options</span>
+        </div>
+        <div class="step-line" [class.done]="currentStep > 3"></div>
+        <div class="step-item">
+            <div class="step" [class.active]="currentStep === 4" [class.done]="currentStep > 4">
+                <svg *ngIf="currentStep > 4" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <span *ngIf="currentStep <= 4">4</span>
+            </div>
+            <span class="step-label">Résultats</span>
+        </div>
     </div>
 
     <div *ngIf="currentStep === 1" class="upload-card">
