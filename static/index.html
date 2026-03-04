@@ -1,14 +1,159 @@
-<!doctype html>
-<html lang="en" data-critters-container>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>PythonAngular</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-<style>@charset "UTF-8";:root{--bs-blue:#0d6efd;--bs-indigo:#6610f2;--bs-purple:#6f42c1;--bs-pink:#d63384;--bs-red:#dc3545;--bs-orange:#fd7e14;--bs-yellow:#ffc107;--bs-green:#198754;--bs-teal:#20c997;--bs-cyan:#0dcaf0;--bs-black:#000;--bs-white:#fff;--bs-gray:#6c757d;--bs-gray-dark:#343a40;--bs-gray-100:#f8f9fa;--bs-gray-200:#e9ecef;--bs-gray-300:#dee2e6;--bs-gray-400:#ced4da;--bs-gray-500:#adb5bd;--bs-gray-600:#6c757d;--bs-gray-700:#495057;--bs-gray-800:#343a40;--bs-gray-900:#212529;--bs-primary:#0d6efd;--bs-secondary:#6c757d;--bs-success:#198754;--bs-info:#0dcaf0;--bs-warning:#ffc107;--bs-danger:#dc3545;--bs-light:#f8f9fa;--bs-dark:#212529;--bs-primary-rgb:13,110,253;--bs-secondary-rgb:108,117,125;--bs-success-rgb:25,135,84;--bs-info-rgb:13,202,240;--bs-warning-rgb:255,193,7;--bs-danger-rgb:220,53,69;--bs-light-rgb:248,249,250;--bs-dark-rgb:33,37,41;--bs-primary-text-emphasis:#052c65;--bs-secondary-text-emphasis:#2b2f32;--bs-success-text-emphasis:#0a3622;--bs-info-text-emphasis:#055160;--bs-warning-text-emphasis:#664d03;--bs-danger-text-emphasis:#58151c;--bs-light-text-emphasis:#495057;--bs-dark-text-emphasis:#495057;--bs-primary-bg-subtle:#cfe2ff;--bs-secondary-bg-subtle:#e2e3e5;--bs-success-bg-subtle:#d1e7dd;--bs-info-bg-subtle:#cff4fc;--bs-warning-bg-subtle:#fff3cd;--bs-danger-bg-subtle:#f8d7da;--bs-light-bg-subtle:#fcfcfd;--bs-dark-bg-subtle:#ced4da;--bs-primary-border-subtle:#9ec5fe;--bs-secondary-border-subtle:#c4c8cb;--bs-success-border-subtle:#a3cfbb;--bs-info-border-subtle:#9eeaf9;--bs-warning-border-subtle:#ffe69c;--bs-danger-border-subtle:#f1aeb5;--bs-light-border-subtle:#e9ecef;--bs-dark-border-subtle:#adb5bd;--bs-white-rgb:255,255,255;--bs-black-rgb:0,0,0;--bs-font-sans-serif:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--bs-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--bs-gradient:linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0));--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.5;--bs-body-color:#212529;--bs-body-color-rgb:33,37,41;--bs-body-bg:#fff;--bs-body-bg-rgb:255,255,255;--bs-emphasis-color:#000;--bs-emphasis-color-rgb:0,0,0;--bs-secondary-color:rgba(33, 37, 41, .75);--bs-secondary-color-rgb:33,37,41;--bs-secondary-bg:#e9ecef;--bs-secondary-bg-rgb:233,236,239;--bs-tertiary-color:rgba(33, 37, 41, .5);--bs-tertiary-color-rgb:33,37,41;--bs-tertiary-bg:#f8f9fa;--bs-tertiary-bg-rgb:248,249,250;--bs-heading-color:inherit;--bs-link-color:#0d6efd;--bs-link-color-rgb:13,110,253;--bs-link-decoration:underline;--bs-link-hover-color:#0a58ca;--bs-link-hover-color-rgb:10,88,202;--bs-code-color:#d63384;--bs-highlight-color:#212529;--bs-highlight-bg:#fff3cd;--bs-border-width:1px;--bs-border-style:solid;--bs-border-color:#dee2e6;--bs-border-color-translucent:rgba(0, 0, 0, .175);--bs-border-radius:.375rem;--bs-border-radius-sm:.25rem;--bs-border-radius-lg:.5rem;--bs-border-radius-xl:1rem;--bs-border-radius-xxl:2rem;--bs-border-radius-2xl:var(--bs-border-radius-xxl);--bs-border-radius-pill:50rem;--bs-box-shadow:0 .5rem 1rem rgba(0, 0, 0, .15);--bs-box-shadow-sm:0 .125rem .25rem rgba(0, 0, 0, .075);--bs-box-shadow-lg:0 1rem 3rem rgba(0, 0, 0, .175);--bs-box-shadow-inset:inset 0 1px 2px rgba(0, 0, 0, .075);--bs-focus-ring-width:.25rem;--bs-focus-ring-opacity:.25;--bs-focus-ring-color:rgba(13, 110, 253, .25);--bs-form-valid-color:#198754;--bs-form-valid-border-color:#198754;--bs-form-invalid-color:#dc3545;--bs-form-invalid-border-color:#dc3545}*,:after,:before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:var(--bs-body-font-family);font-size:var(--bs-body-font-size);font-weight:var(--bs-body-font-weight);line-height:var(--bs-body-line-height);color:var(--bs-body-color);text-align:var(--bs-body-text-align);background-color:var(--bs-body-bg);-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}:root{--bs-breakpoint-xs:0;--bs-breakpoint-sm:576px;--bs-breakpoint-md:768px;--bs-breakpoint-lg:992px;--bs-breakpoint-xl:1200px;--bs-breakpoint-xxl:1400px}:root{--bs-btn-close-filter: }:root{--bs-carousel-indicator-active-bg:#fff;--bs-carousel-caption-color:#fff;--bs-carousel-control-icon-filter: }body{font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background-color:#f8f9fa}
-</style><link rel="stylesheet" href="styles-RYVX6DVB.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles-RYVX6DVB.css"></noscript></head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traitement de Données</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 2rem; }
+        .upload-zone { border: 3px dashed #cbd5e0; border-radius: 15px; padding: 3rem; text-align: center; cursor: pointer; transition: all 0.3s; background: #f8f9fa; margin-bottom: 2rem; }
+        .upload-zone:hover { border-color: #667eea; background: #f0f4ff; }
+        .btn { padding: 1rem 2rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        .preview-section { margin-top: 2rem; }
+        .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; }
+        .preview-card { background: white; border-radius: 15px; padding: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .preview-card h3 { margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e9ecef; }
+        .before h3 { color: #dc3545; }
+        .after h3 { color: #28a745; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        th { background: #667eea; color: white; padding: 0.75rem; text-align: left; position: sticky; top: 0; }
+        td { padding: 0.75rem; border-bottom: 1px solid #e9ecef; }
+        tr:hover { background: #f8f9fa; }
+        .empty { background: #fff3cd; color: #856404; font-style: italic; }
+        .table-scroll { overflow: auto; max-height: 400px; }
+        .loading { text-align: center; padding: 2rem; color: #6c757d; }
+        @media (max-width: 1200px) { .preview-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
 <body>
-  <app-root></app-root>
-<script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-FQPVON2G.js" type="module"></script></body>
+    <div class="container">
+        <h1>🚀 Traitement Automatique des Données</h1>
+        
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <p style="font-size: 3rem; margin-bottom: 1rem;">📁</p>
+            <p style="font-size: 1.2rem; color: #495057; font-weight: 600;">Cliquez pour sélectionner un fichier</p>
+            <p style="color: #6c757d; margin-top: 0.5rem;">CSV, Excel, JSON, XML</p>
+            <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.json,.xml" style="display: none;" onchange="handleFile()">
+        </div>
+
+        <div id="fileName" style="text-align: center; margin-bottom: 1rem; font-weight: 600; color: #667eea;"></div>
+        <div style="text-align: center;">
+            <button class="btn btn-primary" id="processBtn" onclick="processFile()" style="display: none;">Traiter le fichier</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">⏳ Traitement en cours...</div>
+        
+        <div id="preview" class="preview-section" style="display: none;">
+            <h2 style="text-align: center; color: #2c3e50; margin-bottom: 1.5rem;">📊 Aperçu des données</h2>
+            <div class="preview-grid">
+                <div class="preview-card before">
+                    <h3>🔴 Avant traitement</h3>
+                    <div class="table-scroll" id="tableBefore"></div>
+                </div>
+                <div class="preview-card after">
+                    <h3>🟢 Après traitement</h3>
+                    <div class="table-scroll" id="tableAfter"></div>
+                </div>
+            </div>
+            <p style="text-align: center; color: #6c757d; margin-top: 1rem;">💡 Affichage des 10 premières lignes</p>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn btn-primary" onclick="downloadFile()">📥 Télécharger le fichier traité</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        let processedFilename = null;
+
+        function handleFile() {
+            selectedFile = document.getElementById('fileInput').files[0];
+            if (selectedFile) {
+                document.getElementById('fileName').textContent = `Fichier sélectionné : ${selectedFile.name}`;
+                document.getElementById('processBtn').style.display = 'inline-block';
+            }
+        }
+
+        async function processFile() {
+            if (!selectedFile) return;
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('preview').style.display = 'none';
+            document.getElementById('processBtn').disabled = true;
+
+            try {
+                // 1. Analyser
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                const analyzeRes = await fetch('/api/analyze', { method: 'POST', body: formData });
+                const analysis = await analyzeRes.json();
+
+                // 2. Traiter
+                const processRes = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        filename: analysis.filename,
+                        options: {
+                            missing_strategy: 'mean',
+                            outlier_method: 'iqr',
+                            outlier_action: 'cap',
+                            normalization: 'standard',
+                            output_format: 'csv'
+                        }
+                    })
+                });
+                const result = await processRes.json();
+                processedFilename = result.processed_file;
+
+                // 3. Afficher preview
+                if (result.preview) {
+                    displayPreview(result.preview);
+                    document.getElementById('preview').style.display = 'block';
+                }
+            } catch (error) {
+                alert('Erreur : ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('processBtn').disabled = false;
+            }
+        }
+
+        function displayPreview(preview) {
+            const tableBefore = createTable(preview.columns, preview.before, true);
+            const tableAfter = createTable(preview.columns, preview.after, false);
+            document.getElementById('tableBefore').innerHTML = tableBefore;
+            document.getElementById('tableAfter').innerHTML = tableAfter;
+        }
+
+        function createTable(columns, data, showEmpty) {
+            let html = '<table><thead><tr>';
+            columns.forEach(col => html += `<th>${col}</th>`);
+            html += '</tr></thead><tbody>';
+            data.forEach(row => {
+                html += '<tr>';
+                columns.forEach(col => {
+                    const val = row[col];
+                    const isEmpty = !val || val === '' || val === 'NaN';
+                    const cls = showEmpty && isEmpty ? 'empty' : '';
+                    html += `<td class="${cls}">${isEmpty ? 'NaN' : val}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+            return html;
+        }
+
+        function downloadFile() {
+            if (processedFilename) {
+                window.location.href = `/api/download/${processedFilename}`;
+            }
+        }
+    </script>
+</body>
 </html>
