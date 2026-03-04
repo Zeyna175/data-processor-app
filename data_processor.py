@@ -326,11 +326,16 @@ class DataProcessor:
             if converted.notna().sum() / len(df) > 0.5:
                 df[col] = converted
 
-        # 12 → OWN_OCCUPIED doit être Y ou N uniquement
+        # 12 → toute valeur non Y/N dans colonne texte devient NaN
         for col in df.select_dtypes(include='object').columns:
-            unique_vals = df[col].dropna().unique()
-            if set(unique_vals).issubset({'Y', 'N', 'y', 'n', 'YES', 'NO', 'yes', 'no'}):
-                df[col] = df[col].apply(lambda x: x if x in ['Y', 'N', 'y', 'n'] else np.nan)
+            unique_vals = set(df[col].dropna().unique())
+            valid_vals = {'Y', 'N', 'y', 'n', 'YES', 'NO', 'yes', 'no'}
+            
+            # Si la colonne contient AU MOINS un Y ou N
+            if unique_vals & valid_vals:
+                df[col] = df[col].apply(
+                    lambda x: x if x in valid_vals else np.nan
+                )
 
         logger.info("Valeurs invalides remplacées par NaN")
 
