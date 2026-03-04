@@ -20,8 +20,7 @@ export class FileUploadComponent {
   analysis: any = null;
   processingStats: any = null;
   processedFilename = '';
-  previewData: any = null;
-  previewColumns: string[] = [];
+  dataPreview: any = null;
 
   constructor(private dataService: DataProcessorService) { }
 
@@ -47,25 +46,6 @@ export class FileUploadComponent {
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
     this.error = '';
-    this.previewData = null;
-    this.previewColumns = [];
-    if (this.selectedFile) {
-      // On upload le fichier temporairement pour pouvoir le prévisualiser
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-      this.dataService.analyzeFile(this.selectedFile).subscribe({
-        next: (response) => {
-          if (response.filename) {
-            this.dataService.previewFile(response.filename).subscribe({
-              next: (preview) => {
-                this.previewColumns = preview.columns;
-                this.previewData = preview.data;
-              }
-            });
-          }
-        }
-      });
-    }
   }
 
   getFileSize(): string {
@@ -102,6 +82,7 @@ export class FileUploadComponent {
       next: (response) => {
         this.processingStats = response.stats;
         this.processedFilename = response.processed_file;
+        this.dataPreview = response.preview;
         this.currentStep = 3;
         this.isProcessing = false;
       },

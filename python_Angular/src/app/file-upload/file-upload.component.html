@@ -41,8 +41,8 @@
         (process)="processFile($event)">
     </app-processing-options>
 
-    <app-results *ngIf="step === 3" [stats]="processingStats" [filename]="processedFilename"
-        (download)="downloadResult()" (newFile)="reset()">
+    <app-results *ngIf="currentStep === 3" [stats]="processingStats" [filename]="processedFilename"
+        [preview]="dataPreview" (download)="downloadFile()" (newFile)="reset()">
     </app-results>
 
     <div *ngIf="error" class="alert-error">

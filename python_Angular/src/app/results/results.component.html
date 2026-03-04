@@ -51,39 +51,8 @@
 
     <div class="actions">
         <button class="btn-download" (click)="onDownload()">Télécharger</button>
-        <button class="btn-toggle-preview" (click)="togglePreview()">
-            {{ showPreview ? 'Cacher l\'aperçu' : 'Aperçu des données' }}
-        </button>
         <button class="btn-new" (click)="onNewFile()">Nouveau fichier</button>
     </div>
 
-    <div class="preview-panel" *ngIf="showPreview">
-        <div class="preview-header">
-            <h3>Aperçu des données traitées</h3>
-            <span *ngIf="previewColumns.length">{{ previewColumns.length }} colonnes</span>
-        </div>
-
-        <div *ngIf="previewLoading" class="preview-loading">
-            <span class="spinner"></span> Chargement...
-        </div>
-
-        <div *ngIf="previewError" class="preview-error">
-            {{ previewError }}
-        </div>
-
-        <div *ngIf="!previewLoading && !previewError && previewColumns.length" class="table-scroll">
-            <table class="preview-table">
-                <thead>
-                    <tr>
-                        <th *ngFor="let col of previewColumns">{{ col }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let row of previewData">
-                        <td *ngFor="let col of previewColumns">{{ formatVal(row[col]) }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <app-data-preview [preview]="preview"></app-data-preview>
 </div>
