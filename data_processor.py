@@ -316,8 +316,22 @@ class DataProcessor:
         logger.info(f"Fichier chargé: {initial_rows} lignes, {len(df.columns)} colonnes")
 
         # Remplacer toutes les valeurs invalides par NaN
-        invalid_values = ['--', 'NA', 'na', 'n/a', 'NaN', 'nan', 'N/A', 'none', 'None', 'NULL', 'null', '?', ' ']
+        invalid_values = ['--', 'NA', 'na', 'n/a', 'NaN', 'nan', 
+                          'N/A', 'none', 'None', 'NULL', 'null', '?', ' ']
         df.replace(invalid_values, np.nan, inplace=True)
+
+        # HURLEY → colonne censée être numérique, texte invalide devient NaN
+        for col in df.columns:
+            converted = pd.to_numeric(df[col], errors='coerce')
+            if converted.notna().sum() / len(df) > 0.5:
+                df[col] = converted
+
+        # 12 → OWN_OCCUPIED doit être Y ou N uniquement
+        for col in df.select_dtypes(include='object').columns:
+            unique_vals = df[col].dropna().unique()
+            if set(unique_vals).issubset({'Y', 'N', 'y', 'n', 'YES', 'NO', 'yes', 'no'}):
+                df[col] = df[col].apply(lambda x: x if x in ['Y', 'N', 'y', 'n'] else np.nan)
+
         logger.info("Valeurs invalides remplacées par NaN")
 
         stats = {
