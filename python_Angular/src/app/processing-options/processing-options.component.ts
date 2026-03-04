@@ -32,6 +32,10 @@ export class ProcessingOptionsComponent {
     return Object.values(this.analysis.missing_values).reduce((a: number, b: any) => a + Number(b), 0);
   }
 
+  getTotalMissing(): number {
+    return this.getMissingCount();
+  }
+
   onBack() { this.back.emit(); }
   onProcess() { this.process.emit(this.options); }
 }
