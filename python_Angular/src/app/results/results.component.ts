@@ -25,7 +25,7 @@ export class ResultsComponent {
 
   getNormalizationLabel() {
     const m = this.stats?.normalization_method || 'standard';
-    return m === 'standard' ? 'Standard (Z-score)' : 'Min-Max [0, 1]';
+    return m === 'standard' ? 'Standard (Z-score)' : m === 'minmax' ? 'Min-Max [0, 1]' : 'Aucune';
   }
 
   onDownload() { this.download.emit(); }
