@@ -1,51 +1,74 @@
 <div class="results-container">
     <div class="success-banner">
-        <div class="success-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                    stroke-linejoin="round" />
-            </svg>
-        </div>
+        <div class="success-icon">✅</div>
         <div class="success-text">
-            <h2>Traitement terminé !</h2>
-            <p>Votre fichier est prêt : <strong>{{ filename }}</strong></p>
+            <h2>Traitement terminé avec succès!</h2>
+            <p>🎉 Votre fichier a été nettoyé et normalisé</p>
         </div>
     </div>
 
-    <div class="stats-row">
-        <div class="stat-pill">
-            <span class="num">{{ stats?.initial_rows || 0 }}</span>
-            <span class="lbl">Initiales</span>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-num">{{ stats?.initial_rows || 0 }}</div>
+            <div class="stat-label">Lignes originales</div>
         </div>
-        <div class="pill-arrow">→</div>
-        <div class="stat-pill success">
-            <span class="num">{{ stats?.final_rows || 0 }}</span>
-            <span class="lbl">Finales</span>
+        <div class="stat-box">
+            <div class="stat-num">{{ stats?.final_rows || 0 }}</div>
+            <div class="stat-label">Lignes finales</div>
         </div>
-        <div class="stat-pill danger">
-            <span class="num">{{ stats?.rows_removed || 0 }}</span>
-            <span class="lbl">Supprimées</span>
+        <div class="stat-box">
+            <div class="stat-num">{{ stats?.rows_removed || 0 }}</div>
+            <div class="stat-label">Lignes supprimées</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num">{{ stats?.initial_columns || 0 }}</div>
+            <div class="stat-label">Colonnes</div>
         </div>
     </div>
 
-    <div class="details-grid">
-        <div class="detail-card" *ngIf="hasMissingValues()">
-            <h4>Valeurs manquantes</h4>
-            <p><strong>{{ getTotalMissing() }}</strong> corrigées</p>
-            <div class="chips">
-                <span *ngFor="let item of getMissingItems()" class="chip">{{ item.key }}: {{ item.value }}</span>
+    <h3 class="section-title">📋 Détails du traitement</h3>
+
+    <div class="details-list">
+        <div class="detail-item" *ngIf="hasMissingValues()">
+            <div class="detail-header">
+                <span class="detail-number">1</span>
+                <h4>Valeurs manquantes</h4>
+            </div>
+            <p class="detail-total">Total: {{ getTotalMissing() }} valeur(s)</p>
+            <div class="detail-list-items">
+                <div *ngFor="let item of getMissingItems()" class="list-item">
+                    {{ item.key }}<span class="item-count">{{ item.value }} valeur(s)</span>
+                </div>
             </div>
         </div>
-        <div class="detail-card" *ngIf="hasOutliers()">
-            <h4>Outliers</h4>
-            <p><strong>{{ getTotalOutliers() }}</strong> traités</p>
-            <div class="chips">
-                <span *ngFor="let item of getOutlierItems()" class="chip">{{ item.key }}: {{ item.value }}</span>
+
+        <div class="detail-item" *ngIf="hasOutliers()">
+            <div class="detail-header">
+                <span class="detail-number">2</span>
+                <h4>Valeurs aberrantes</h4>
+            </div>
+            <p class="detail-total">Total: {{ getTotalOutliers() }} outlier(s)</p>
+            <div class="detail-list-items">
+                <div *ngFor="let item of getOutlierItems()" class="list-item">
+                    {{ item.key }}<span class="item-count">{{ item.value }} outlier(s)</span>
+                </div>
             </div>
         </div>
-        <div class="detail-card">
-            <h4>Normalisation</h4>
-            <p>Méthode : <strong>{{ getNormalizationLabel() }}</strong></p>
+
+        <div class="detail-item">
+            <div class="detail-header">
+                <span class="detail-number">3</span>
+                <h4>Doublons</h4>
+            </div>
+            <p class="detail-total">Trouvés: {{ stats?.duplicates_found || 0 }} | Supprimés: {{ stats?.duplicates_removed || 0 }}</p>
+        </div>
+
+        <div class="detail-item">
+            <div class="detail-header">
+                <span class="detail-number">4</span>
+                <h4>Normalisation</h4>
+            </div>
+            <p class="detail-total">Méthode: {{ getNormalizationLabel() }}</p>
         </div>
     </div>
 
