@@ -301,7 +301,15 @@ def process_file():
     file_type = get_file_type(safe_filename)
 
     try:
+        # Charger les données originales pour l'aperçu
+        df_original = processor.load_file(file_path, file_type)
+        preview_before = df_original.head(10).fillna('').to_dict('records')
+        columns = df_original.columns.tolist()
+        
         processed_df, stats = processor.process_data(file_path, file_type, options)
+        
+        # Aperçu après traitement
+        preview_after = processed_df.head(10).fillna('').to_dict('records')
 
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         output_format = options.get('output_format', 'csv')
@@ -330,7 +338,12 @@ def process_file():
         return jsonify({
             'message': 'Traitement terminé avec succès',
             'processed_file': processed_filename,
-            'stats': stats
+            'stats': stats,
+            'preview': {
+                'columns': columns,
+                'before': preview_before,
+                'after': preview_after
+            }
         })
     except Exception as e:
         logger.error(f"Erreur de traitement pour {safe_filename}: {e}", exc_info=True)
