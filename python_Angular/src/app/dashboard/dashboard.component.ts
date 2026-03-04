@@ -15,7 +15,7 @@ export class DashboardComponent implements OnInit {
   username: string | null = null;
   stats: any = {};
   files: any[] = [];
-  private apiUrl = 'https://data-processor-app.onrender.com/api';
+  private apiUrl = '/api';
 
   constructor(
     private http: HttpClient,
