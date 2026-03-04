@@ -315,6 +315,11 @@ class DataProcessor:
         initial_rows = len(df)
         logger.info(f"Fichier chargé: {initial_rows} lignes, {len(df.columns)} colonnes")
 
+        # Remplacer toutes les valeurs invalides par NaN
+        invalid_values = ['--', 'NA', 'na', 'n/a', 'NaN', 'nan', 'N/A', 'none', 'None', 'NULL', 'null', '?', ' ']
+        df.replace(invalid_values, np.nan, inplace=True)
+        logger.info("Valeurs invalides remplacées par NaN")
+
         stats = {
             'initial_rows': initial_rows,
             'initial_columns': len(df.columns),
