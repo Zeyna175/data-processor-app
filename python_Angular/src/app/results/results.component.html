@@ -51,8 +51,7 @@
 
     <div class="actions">
         <button class="btn-download" (click)="onDownload()">Télécharger</button>
+        <button class="btn-preview" (click)="viewPreview.emit()">Voir aperçu avant/après</button>
         <button class="btn-new" (click)="onNewFile()">Nouveau fichier</button>
     </div>
-
-    <app-data-preview [preview]="preview"></app-data-preview>
 </div>

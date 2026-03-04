@@ -237,7 +237,9 @@ def register():
 
 @app.route('/api/analyze', methods=['POST'])
 def analyze_file():
-    username = get_user_from_token() or 'anonymous'
+    username = get_user_from_token()
+    if not username:
+        return jsonify({'error': 'Non authentifié'}), 401
 
     if 'file' not in request.files:
         return jsonify({'error': 'Aucun fichier fourni'}), 400
@@ -257,17 +259,17 @@ def analyze_file():
         analysis = processor.analyze_data(df)
         analysis['filename'] = filename
 
-        if username != 'anonymous':
-            file_info = UserFile(
-                username=username,
-                filename=filename,
-                upload_date=datetime.now().isoformat(),
-                rows=analysis.get('total_rows', 0),
-                columns=analysis.get('total_columns', 0),
-                status='uploaded'
-            )
-            db.session.add(file_info)
-            db.session.commit()
+        file_info = UserFile(
+            username=username,
+            filename=filename,
+            upload_date=datetime.now().isoformat(),
+            rows=analysis.get('total_rows', 0),
+            columns=analysis.get('total_columns', 0),
+            status='uploaded'
+        )
+        db.session.add(file_info)
+        db.session.commit()
+        logger.info(f"Fichier enregistré pour {username}: {filename}")
 
         return jsonify(analysis)
     except Exception as e:

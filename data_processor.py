@@ -315,23 +315,19 @@ class DataProcessor:
         initial_rows = len(df)
         logger.info(f"Fichier chargé: {initial_rows} lignes, {len(df.columns)} colonnes")
 
-        # Remplacer toutes les valeurs invalides par NaN
         invalid_values = ['--', 'NA', 'na', 'n/a', 'NaN', 'nan', 
                           'N/A', 'none', 'None', 'NULL', 'null', '?', ' ']
         df.replace(invalid_values, np.nan, inplace=True)
 
-        # HURLEY → colonne censée être numérique, texte invalide devient NaN
         for col in df.columns:
             converted = pd.to_numeric(df[col], errors='coerce')
             if converted.notna().sum() / len(df) > 0.5:
                 df[col] = converted
 
-        # 12 → toute valeur non Y/N dans colonne texte devient NaN
         for col in df.select_dtypes(include='object').columns:
             unique_vals = set(df[col].dropna().unique())
             valid_vals = {'Y', 'N', 'y', 'n', 'YES', 'NO', 'yes', 'no'}
             
-            # Si la colonne contient AU MOINS un Y ou N
             if unique_vals & valid_vals:
                 df[col] = df[col].apply(
                     lambda x: x if x in valid_vals else np.nan
@@ -351,12 +347,10 @@ class DataProcessor:
             'normalization_method': options.get('normalization', 'standard')
         }
 
-        # Traitement des valeurs manquantes
         df, missing_details = self.handle_missing_values(df, options.get('missing_strategy', 'mean'))
         stats['missing_values'] = missing_details
         logger.info("Valeurs manquantes traitées")
 
-        # Traitement des outliers
         df, outlier_details = self.handle_outliers(
             df,
             options.get('outlier_method', 'iqr'),
@@ -365,14 +359,12 @@ class DataProcessor:
         stats['outliers'] = outlier_details
         logger.info("Valeurs aberrantes traitées")
 
-        # Suppression des doublons
         duplicates_before = int(df.duplicated().sum())
         df, duplicates_removed = self.remove_duplicates(df, options.get('duplicate_subset'))
         stats['duplicates_found'] = duplicates_before
         stats['duplicates_removed'] = duplicates_removed
         logger.info("Doublons supprimés")
 
-        # Normalisation
         df = self.normalize_data(df, options.get('normalization', 'standard'))
         logger.info("Normalisation terminée")
 

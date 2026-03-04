@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { DataProcessorService } from '../services/data-processor.service';
 import { ProcessingOptionsComponent } from '../processing-options/processing-options.component';
 import { ResultsComponent } from '../results/results.component';
+import { DataPreviewComponent } from '../data-preview/data-preview.component';
 
 @Component({
   selector: 'app-file-upload',
   standalone: true,
-  imports: [CommonModule, ProcessingOptionsComponent, ResultsComponent],
+  imports: [CommonModule, ProcessingOptionsComponent, ResultsComponent, DataPreviewComponent],
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.css']
 })

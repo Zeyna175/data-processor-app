@@ -5,6 +5,8 @@
         <div class="step" [class.active]="currentStep === 2" [class.done]="currentStep > 2">2</div>
         <div class="step-line"></div>
         <div class="step" [class.active]="currentStep === 3" [class.done]="currentStep > 3">3</div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="currentStep === 4" [class.done]="currentStep > 4">4</div>
     </div>
 
     <div *ngIf="currentStep === 1" class="upload-card">
@@ -42,8 +44,14 @@
     </app-processing-options>
 
     <app-results *ngIf="currentStep === 3" [stats]="processingStats" [filename]="processedFilename"
-        [preview]="dataPreview" (download)="downloadFile()" (newFile)="reset()">
+        (download)="downloadFile()" (newFile)="reset()" (viewPreview)="currentStep = 4">
     </app-results>
+
+    <app-data-preview *ngIf="currentStep === 4 && dataPreview" [preview]="dataPreview"></app-data-preview>
+    <div *ngIf="currentStep === 4" style="text-align: center; margin-top: 2rem;">
+        <button class="btn-download" (click)="downloadFile()" style="margin-right: 1rem;">Télécharger</button>
+        <button class="btn-new" (click)="reset()">Nouveau fichier</button>
+    </div>
 
     <div *ngIf="error" class="alert-error">
         {{ error }}

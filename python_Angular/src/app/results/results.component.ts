@@ -12,9 +12,9 @@ import { DataPreviewComponent } from '../data-preview/data-preview.component';
 export class ResultsComponent {
   @Input() stats: any;
   @Input() filename: string = '';
-  @Input() preview: any;
   @Output() download = new EventEmitter<void>();
   @Output() newFile = new EventEmitter<void>();
+  @Output() viewPreview = new EventEmitter<void>();
 
   hasMissingValues() { return this.stats?.missing_values && Object.keys(this.stats.missing_values).length > 0; }
   hasOutliers() { return this.stats?.outliers && Object.keys(this.stats.outliers).length > 0; }
